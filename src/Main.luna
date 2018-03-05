@@ -1,0 +1,19 @@
+import Std.HTTP
+import Std.Time
+import Fin
+
+def getCurrencyPrice crypto fiat:
+    uri = "https://min-api.cryptocompare.com/data/price"
+    request = Http.get uri
+    withFsym = request . setParam "fsym" (Just crypto)
+    withTsyms = withFsym . setParam "tsyms" (Just fiat)
+    response = withTsyms . perform . json
+    price = response . getReal fiat
+    price
+
+def main:
+    fiat = "USD"
+    crypto = "BTC"
+    prices = every 1.seconds (getCurrencyPrice crypto fiat)
+    ewma1 = ewma
+    None

@@ -1,0 +1,44 @@
+def scan strm a f:
+    case strm of
+        Stream head tail:
+            next = f head a
+            Stream a (scan tail next f)
+
+def zip strm1 strm2:
+    case Tuple2 strm1 strm2 of
+        Tuple2 (Stream head1 tail1) (Stream head2 tail2):
+            Stream (Tuple2 head1 head2) (zip tail1 tail2)
+
+def _apply op tuple:
+    case tuple of
+        Tuple2 a b:
+            op a b
+
+def sAdd s1 s2:
+    op = _apply (+)
+    pairs = zip s1 s2
+    pairs . map op
+
+def sSub s1 s2:
+    op = _apply (-)
+    pairs = zip s1 s2
+    pairs . map op
+
+def sMul s1 s2:
+    op = _apply (*)
+    pairs = zip s1 s2
+    pairs . map op
+
+def sDiv s1 s2:
+    op = _apply (/)
+    pairs = zip s1 s2
+    pairs . map op
+
+def convexCombination k a b:
+    k * a + (1.0 - k) * b
+
+def ewma duration strm:
+    op = convexCombination (1.0 / duration)
+    case strm of
+        Stream head tail:
+            scan tail head op
